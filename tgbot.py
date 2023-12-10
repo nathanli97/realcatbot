@@ -25,6 +25,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if msg.text.startswith("+"):
         if not update.message.reply_to_message:
+            logging.getLogger("Recv").warning("No reply to")
             return
 
         reply_to_user = update.message.reply_to_message.from_user
@@ -40,10 +41,12 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 unit = what
 
             await update.message.reply_text(f'{msg.from_user.full_name} 给 {reply_to_user.full_name} 加了{num}{unit}!')
+        else:
+            logging.getLogger("Recv").warning("REGEX match failed")
     elif msg.text.startswith("!"):
         target_user_name = msg.from_user.full_name
 
-        if update.message.reply_to_message.from_user:
+        if update.message.reply_to_message:
             target_user_name = update.message.reply_to_message.from_user.full_name
 
             if msg.text == "!kiss":
