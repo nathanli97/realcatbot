@@ -31,7 +31,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_to_user = update.message.reply_to_message.from_user
 
         text = msg.text[1:]
-        match = re.fullmatch(r"(\d)+( .+)?", text)
+        match = re.fullmatch(r"(\d+)( .+)?", text)
         if match:
             num = int(match.group(1))
             what = match.group(2)
