@@ -60,11 +60,13 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif message == "kick":
             await update.message.reply_text(f'{target_user_name} 已踢出！')
         else:
-            action = ''
-            match = re.fullmatch(r".+ (.+)", message)
+            action = message
+            what = ''
+            match = re.fullmatch(r"(.+) (.+)", message)
             if match:
                 action = match.group(1)
-            await update.message.reply_text(f'{from_user_name} {message} {target_user_name}{action}!')
+                what = match.group(1)
+            await update.message.reply_text(f'{from_user_name}{action}{target_user_name}{what}!')
 
 
 def main():
