@@ -45,6 +45,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logging.getLogger("Recv").warning("REGEX match failed")
     elif msg.text.startswith("!") or msg.text.startswith("！"):
         message = msg.text[1:]
+        from_user_name = msg.from_user.full_name
         target_user_name = msg.from_user.full_name
 
         if update.message.reply_to_message:
@@ -58,7 +59,12 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         elif message == "kick":
             await update.message.reply_text(f'{target_user_name} 已踢出！')
-            return
+        else:
+            action = ''
+            match = re.fullmatch(r".+ (.+)", message)
+            if match:
+                action = match.group(1)
+            await update.message.reply_text(f'{from_user_name} {message} {target_user_name}{action}!')
 
 
 def main():
