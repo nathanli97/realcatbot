@@ -65,8 +65,8 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             match = re.fullmatch(r"(.+) (.+)", message)
             if match:
                 action = match.group(1)
-                what = match.group(1)
-            await update.message.reply_text(f'{from_user_name}{action}{target_user_name}{what}!')
+                what = match.group(2)
+            await update.message.reply_text(f'{from_user_name}给{action}{target_user_name}{what}!')
 
 
 def main():
