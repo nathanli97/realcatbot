@@ -66,7 +66,9 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if match:
                 action = match.group(1)
                 what = match.group(2)
-            await update.message.reply_text(f'{from_user_name}给{target_user_name}{action}{what}!')
+                await update.message.reply_text(f'{from_user_name}{target_user_name}{action}{what}!')
+            else:
+                await update.message.reply_text(f'{from_user_name}{action}{target_user_name}!')
 
 
 def main():
