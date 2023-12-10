@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /root/tgbot
+cd /root/tgbot_catbot
 
 source .env
 python -m pip install -r requirements.txt
