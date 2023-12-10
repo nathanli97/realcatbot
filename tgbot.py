@@ -43,19 +43,20 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(f'{msg.from_user.full_name} 给 {reply_to_user.full_name} 加了{num}{unit}!')
         else:
             logging.getLogger("Recv").warning("REGEX match failed")
-    elif msg.text.startswith("!"):
+    elif msg.text.startswith("!") or msg.text.startswith("！"):
+        message = msg.text[1:]
         target_user_name = msg.from_user.full_name
 
         if update.message.reply_to_message:
             target_user_name = update.message.reply_to_message.from_user.full_name
 
-            if msg.text == "!kiss":
+            if message == "kiss":
                 await update.message.reply_text(f'{msg.from_user.full_name} 亲了一口 {target_user_name}!')
                 return
-        if msg.text == "!ban":
+        if message == "ban":
             await update.message.reply_text(f'{target_user_name} 已封禁！')
             return
-        elif msg.text == "!kick":
+        elif message == "kick":
             await update.message.reply_text(f'{target_user_name} 已踢出！')
             return
 
