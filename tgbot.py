@@ -63,7 +63,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     logging.basicConfig(
         format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s',
-        level=logging.INFO,
+        level=logging.DEBUG,
     )
 
     application = ApplicationBuilder().token(bot_token).read_timeout(5000).rate_limiter(
