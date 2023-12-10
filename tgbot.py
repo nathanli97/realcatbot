@@ -24,7 +24,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if msg.text.startswith("+"):
-        if not update.message.reply_to_message:
+        if not msg.reply_to_message:
             logging.getLogger("Recv").warning("No reply to")
             return
 
