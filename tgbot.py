@@ -23,7 +23,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             msg.chat.type is not ChatType.SUPERGROUP:
         return
 
-    if msg.text.startswith("+"):
+    if msg.text.startswith("+") or msg.text.startswith("-"):
         if not msg.reply_to_message:
             logging.getLogger("Recv").warning("No reply to")
             return
@@ -40,7 +40,11 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if what:
                 unit = what
 
-            await update.message.reply_text(f'{msg.from_user.full_name} 给 {reply_to_user.full_name} 加了{num}{unit}!')
+            action = "加"
+            if msg.text.startswith("-"):
+                action = "减"
+
+            await update.message.reply_text(f'{msg.from_user.full_name} 给 {reply_to_user.full_name} {action}了{num}{unit}!')
         else:
             logging.getLogger("Recv").warning("REGEX match failed")
     elif msg.text.startswith("!") or msg.text.startswith("！"):
