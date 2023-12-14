@@ -16,10 +16,10 @@ bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
 bot_webhook = os.environ['WEBHOOK']
 
 random_list = ["兔兔", "雁雁", "狗狗", "荧", "猫猫", "小企鹅",]
-random_message_list = ["想要挥刀自宫!", "想要申请全站自ban!", "开付费emby服!",
-                       "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!", "想要唱希望之花",
-                       "想要手冲", "想去M-Team发自己的自制色情片","想要退群","想要被兔纸骂zako!","想要被兔纸暴打!",
-                       "想要爬上兔纸的床!","想要去东京援交","想自觉地撅起屁股","想露出来给群友透","想要被后入"]
+# random_message_list = ["想要挥刀自宫!", "想要申请全站自ban!", "开付费emby服!",
+#                        "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!", "想要唱希望之花",
+#                        "想要手冲", "想去M-Team发自己的自制色情片","想要退群","想要被兔纸骂zako!","想要被兔纸暴打!",
+#                        "想要爬上兔纸的床!","想要去东京援交","想自觉地撅起屁股","想露出来给群友透","想要被后入"]
 message_count_warning_users = []  # 下个版本再实现持久化保存
 scores = {}
 lastjoke = {}
@@ -159,14 +159,14 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     await update.message.reply_text(f'{from_user_name}{action}{target_user_name}{what}!')
                 else:
                     await update.message.reply_text(f'{from_user_name}{action}{target_user_name}!')
-        else:
-            random_message = random.choice(random_message_list)
-            if msguserid not in lastjoke:
-                lastjoke[msguserid] = random_message
-            else:
-                while lastjoke[msguserid] == random_message:
-                    random_message = random.choice(random_message_list)
-            await update.message.reply_text(f'{msg.from_user.full_name}{random_message}')
+        # else:
+        #     random_message = random.choice(random_message_list)
+        #     if msguserid not in lastjoke:
+        #         lastjoke[msguserid] = random_message
+        #     else:
+        #         while lastjoke[msguserid] == random_message:
+        #             random_message = random.choice(random_message_list)
+        #     await update.message.reply_text(f'{msg.from_user.full_name}{random_message}')
 
 
 def main():
