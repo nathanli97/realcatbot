@@ -17,7 +17,8 @@ bot_webhook = os.environ['WEBHOOK']
 
 random_list = ["兔兔", "雁雁", "狗狗", "荧荧", "猫猫", "小企鹅"]
 random_message_list = ["想要挥刀自宫!", "和Lian圣贴贴!", "和鼠鼠贴贴!", "想要申请全站自ban!", "开付费emby服!",
-                       "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!"]
+                       "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!", "想要唱希望之花",
+                       "想要手冲", "想去M-Team发自己的自制色情片"]
 message_count_warning_users = []  # 下个版本再实现持久化保存
 scores = {}
 MaxScores = 150
