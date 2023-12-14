@@ -43,7 +43,7 @@ def check_contain_engidlist(check_str):
  
 def check_contain_valid_str(check_str):
     """判断字符串是否包含有效字符：中文 or 英文 or 数字"""
-    valid_res = check_contain_englist(check_str) or check_contain_engidlist(check_str)
+    valid_res = check_contain_chinese(check_str) or check_contain_engidlist(check_str)
     return valid_res
 
 
