@@ -23,11 +23,12 @@ scores = {}
 MaxScores = 150
 
 score_lock = threading.Lock()
-schedule.every(45).minutes.do(cleanscores)
 
 def cleanscores():
     scores.clear()
 
+
+schedule.every(45).minutes.do(cleanscores)
 def clear_score():
     schedule.run_pending()
     time.sleep(60)
