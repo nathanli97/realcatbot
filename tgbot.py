@@ -16,8 +16,8 @@ bot_token = os.environ['BOT_TOKEN']
 bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
 bot_webhook = os.environ['WEBHOOK']
 
-random_list = ["兔兔","雁雁","狗狗","荧荧","猫猫","小企鹅"]
-random_message_list = ["想要挥刀自宫!","和Lian圣贴贴!","和鼠鼠贴贴!","想要申请全站自ban!","开付费emby服!","想要传禁转资源并改官组后缀!","想要去盗取他站界面!","想要去开群友的盒!"]
+random_list = ["兔兔","雁雁","狗狗","荧","猫猫","小企鹅"]
+random_message_list = ["想要挥刀自宫!","和Lian圣贴贴!","和鼠鼠贴贴!","想要申请全站自ban!","开付费emby服!","想要传禁转资源并改官组后缀!","想要去盗取他站界面!","想要去开群友的盒!","想要唱希望之花","想要手冲","想去M-Team发自己的自制色情片"]
 message_count_warning_users = [] #下个版本再实现持久化保存
 scores = {}
 MaxScores = 150
@@ -125,10 +125,10 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             random_message = random.choice(random_message_list)
             await update.message.reply_text(f'{msg.from_user.full_name}{random_message}')
-    elif msg.text == "/enable_message_count_warning":
+    elif msg.text == "enable_message_count_warning":
         message_count_warning_users.append(msguserid)
         await update.message.reply_text(f'{msg.from_user.full_name} Enabled Water Detector')
-    elif msg.text == "/disable_message_count_warning":
+    elif msg.text == "disable_message_count_warning":
         message_count_warning_users.remove(msguserid)
         await update.message.reply_text(f'{msg.from_user.full_name} Disabled Water Detector')
             
