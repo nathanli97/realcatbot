@@ -7,42 +7,48 @@ import time
 import schedule
 import threading
 
-
 from telegram import Update
 from telegram.constants import ChatType
-from telegram.ext import ApplicationBuilder, AIORateLimiter, ContextTypes, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, AIORateLimiter, ContextTypes, MessageHandler, filters, CommandHandler
 
 bot_token = os.environ['BOT_TOKEN']
 bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
 bot_webhook = os.environ['WEBHOOK']
 
-random_list = ["兔兔","雁雁","狗狗","荧荧","猫猫","小企鹅"]
-random_message_list = ["想要挥刀自宫!","和Lian圣贴贴!","和鼠鼠贴贴!","想要申请全站自ban!","开付费emby服!","想要传禁转资源并改官组后缀!","想要去盗取他站界面!","想要去开群友的盒!"]
-message_count_warning_users = [] #下个版本再实现持久化保存
+random_list = ["兔兔", "雁雁", "狗狗", "荧荧", "猫猫", "小企鹅"]
+random_message_list = ["想要挥刀自宫!", "和Lian圣贴贴!", "和鼠鼠贴贴!", "想要申请全站自ban!", "开付费emby服!",
+                       "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!"]
+message_count_warning_users = []  # 下个版本再实现持久化保存
 scores = {}
 MaxScores = 150
 
 score_lock = threading.Lock()
+
 
 def cleanscores():
     scores.clear()
 
 
 schedule.every(45).minutes.do(cleanscores)
+
+
 def clear_score():
     schedule.run_pending()
     time.sleep(60)
+
 
 def check_contain_chinese(check_str):
     for ch in check_str:
         if u'\u4e00' <= ch <= u'\u9fff':
             return True
     return False
- 
+
+
 def check_contain_engidlist(check_str):
     contain_en = bool(re.search('[a-z]', check_str)) or bool(re.search('[0-9]', check_str))
     return contain_en
- 
+
+
 def check_contain_valid_str(check_str):
     """判断字符串是否包含有效字符：中文 or 英文 or 数字"""
     valid_res = check_contain_chinese(check_str) or check_contain_engidlist(check_str)
@@ -53,12 +59,26 @@ def random_id_generator(size=64, chars=string.ascii_uppercase + string.ascii_low
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+async def enable_message_count_warning(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = update.message
+    msguserid = str(msg.from_user.id)
+    message_count_warning_users.append(msguserid)
+    await update.message.reply_text(f'{msg.from_user.full_name} Enabled Water Detector')
+
+
+async def disable_message_count_warning(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = update.message
+    msguserid = str(msg.from_user.id)
+    message_count_warning_users.remove(msguserid)
+    await update.message.reply_text(f'{msg.from_user.full_name} Disabled Water Detector')
+
+
 async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
     msguserid = str(msg.from_user.id)
     if msg.chat.type is not ChatType.GROUP and \
             msg.chat.type is not ChatType.SUPERGROUP:
-        return    
+        return
     if msguserid not in scores:
         scores[msguserid] = 0
     else:
@@ -79,7 +99,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             num = int(match.group(1))
             what = match.group(2)
             unit = "只" + random.choice(random_list)
-            
+
             if what:
                 unit = what
 
@@ -87,11 +107,12 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if msg.text.startswith("-"):
                 action = "减"
 
-            await update.message.reply_text(f'{msg.from_user.full_name} 给 {reply_to_user.full_name} {action}了{num}{unit}!')
+            await update.message.reply_text(
+                f'{msg.from_user.full_name} 给 {reply_to_user.full_name} {action}了{num}{unit}!')
         else:
             logging.getLogger("Recv").warning("REGEX match failed")
     elif msg.text.startswith("!") or msg.text.startswith("！"):
-        
+
         message = msg.text[1:]
         from_user_name = msg.from_user.full_name
         target_user_name = msg.from_user.full_name
@@ -125,13 +146,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             random_message = random.choice(random_message_list)
             await update.message.reply_text(f'{msg.from_user.full_name}{random_message}')
-    elif msg.text == "/enable_message_count_warning":
-        message_count_warning_users.append(msguserid)
-        await update.message.reply_text(f'{msg.from_user.full_name} Enabled Water Detector')
-    elif msg.text == "/disable_message_count_warning":
-        message_count_warning_users.remove(msguserid)
-        await update.message.reply_text(f'{msg.from_user.full_name} Disabled Water Detector')
-            
+
 
 def main():
     clear_score_thread = threading.Thread(target=clear_score)
@@ -146,7 +161,13 @@ def main():
         AIORateLimiter()).build()
 
     msg_recv_handler = MessageHandler(callback=recv, filters=filters.ChatType.GROUPS & (~filters.COMMAND))
+    enable_message_count_warning_handler = CommandHandler('enable_message_count_warning',
+                                                          callback=enable_message_count_warning)
+    disable_message_count_warning_handler = CommandHandler('disable_message_count_warning',
+                                                           callback=disable_message_count_warning)
     application.add_handler(msg_recv_handler)
+    application.add_handler(enable_message_count_warning_handler)
+    application.add_handler(disable_message_count_warning_handler)
 
     bot_secret_id = random_id_generator(32)
     logging.getLogger('Bot').warning(f'Bot running with random ID "{bot_secret_id}"')
