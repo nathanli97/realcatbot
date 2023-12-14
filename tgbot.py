@@ -23,11 +23,12 @@ scores = {}
 MaxScores = 150
 
 score_lock = threading.Lock()
+schedule.every(45).minutes.do(cleanscores)
+
 def cleanscores():
     scores.clear()
 
 def clear_score():
-    schedule.every(45).minutes.do(cleanscores)
     schedule.run_pending()
     time.sleep(60)
 
@@ -76,7 +77,7 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if match:
             num = int(match.group(1))
             what = match.group(2)
-            unit = "只" + random.choice(f)
+            unit = "只" + random.choice(random_list)
             
             if what:
                 unit = what
