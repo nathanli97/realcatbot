@@ -39,7 +39,7 @@ def check_contain_chinese(check_str):
  
 def check_contain_engidlist(check_str):
     contain_en = bool(re.search('[a-z]', check_str)) or bool(re.search('[0-9]', check_str))
-    return contain_enid
+    return contain_en
  
 def check_contain_valid_str(check_str):
     """判断字符串是否包含有效字符：中文 or 英文 or 数字"""
