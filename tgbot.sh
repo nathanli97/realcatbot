@@ -12,5 +12,5 @@ do
     systemctl restart tgbot
     exit
   fi
-  sleep 72000
+  sleep 1440
 done
