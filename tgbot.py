@@ -73,6 +73,24 @@ async def disable_message_count_warning(update: Update, context: ContextTypes.DE
     message_count_warning_users.remove(msguserid)
     await update.message.reply_text(f'{msg.from_user.full_name} Disabled Water Detector')
 
+async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    strkey = "本小时内水王排行榜"
+    cnt = 0
+    after = dict(sorted(scores.items(), key=lambda e: e[1]))
+    for key, value in after.items():
+        cnt += 1
+        if cnt > 11:
+            strkey = strkey +"\n还有几个水逼我就不列举了，哼!"
+            break
+        strkey = strkey+"\n第{}名 {} 水了 {} 条信息".format( str(cnt), key, value)
+    await update.message.reply_text(strkey)
+
+
+
+
+
+
+
 
 async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
@@ -166,9 +184,11 @@ def main():
                                                           callback=enable_message_count_warning)
     disable_message_count_warning_handler = CommandHandler('disable_message_count_warning',
                                                            callback=disable_message_count_warning)
+    scores_list_handler = CommandHandler('scores_list', callback=scores_list)                                                           
     application.add_handler(msg_recv_handler)
     application.add_handler(enable_message_count_warning_handler)
     application.add_handler(disable_message_count_warning_handler)
+    application.add_handler(scores_list_handler)
 
     bot_secret_id = random_id_generator(32)
     logging.getLogger('Bot').warning(f'Bot running with random ID "{bot_secret_id}"')
