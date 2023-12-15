@@ -11,16 +11,15 @@ from telegram import Update
 from telegram.constants import ChatType
 from telegram.ext import ApplicationBuilder, AIORateLimiter, ContextTypes, MessageHandler, filters, CommandHandler
 
+from fake_commands import fake_command
+from plusminus import plus_or_minus
+
 bot_token = os.environ['BOT_TOKEN']
 bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
 bot_webhook = os.environ['WEBHOOK']
 
-random_list = ["兔兔", "雁雁", "狗狗", "荧", "猫猫", "小企鹅",]
-# random_message_list = ["想要挥刀自宫!", "想要申请全站自ban!", "开付费emby服!",
-#                        "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!", "想要唱希望之花",
-#                        "想要手冲", "想去M-Team发自己的自制色情片","想要退群","想要被兔纸骂zako!","想要被兔纸暴打!",
-#                        "想要爬上兔纸的床!","想要去东京援交","想自觉地撅起屁股","想露出来给群友透","想要被后入"]
 message_count_warning_users = []  # 下个版本再实现持久化保存
+
 scores = {}
 lastjoke = {}
 idtoname = {}
@@ -41,24 +40,6 @@ def clear_score():
     time.sleep(60)
 
 
-def check_contain_chinese(check_str):
-    for ch in check_str:
-        if u'\u4e00' <= ch <= u'\u9fff':
-            return True
-    return False
-
-
-def check_contain_engidlist(check_str):
-    contain_en = bool(re.search('[a-z]', check_str)) or bool(re.search('[0-9]', check_str))
-    return contain_en
-
-
-def check_contain_valid_str(check_str):
-    """判断字符串是否包含有效字符：中文 or 英文 or 数字"""
-    valid_res = check_contain_chinese(check_str) or check_contain_engidlist(check_str)
-    return valid_res
-
-
 def random_id_generator(size=64, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
@@ -76,6 +57,7 @@ async def disable_message_count_warning(update: Update, context: ContextTypes.DE
     message_count_warning_users.remove(msguserid)
     await update.message.reply_text(f'{msg.from_user.full_name} Disabled Water Detector')
 
+
 async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     strkey = "本小时内水王排行榜"
     cnt = 0
@@ -83,10 +65,11 @@ async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for key, value in after.items():
         cnt += 1
         if cnt > 11:
-            strkey = strkey +"\n还有几个水逼我就不列举了，哼!"
+            strkey = strkey + "\n还有几个水逼我就不列举了，哼!"
             break
-        strkey = strkey+"\n第{}名 {} 水了 {} 条信息".format( str(cnt), idtoname[key], value)
+        strkey = strkey + "\n第{}名 {} 水了 {} 条信息".format(str(cnt), idtoname[key], value)
     await update.message.reply_text(strkey)
+
 
 async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
@@ -103,62 +86,9 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f'{msg.from_user.full_name} 这个小时内水太多啦！去做点其他事情吧。')
         return
     if msg.text.startswith("+") or msg.text.startswith("-"):
-        if not msg.reply_to_message:
-            logging.getLogger("Recv").warning("No reply to")
-            return
-
-        reply_to_user = update.message.reply_to_message.from_user
-
-        text = msg.text[1:]
-        match = re.fullmatch(r"(\d+)( .+)?", text)
-        if match:
-            num = int(match.group(1))
-            what = match.group(2)
-            unit = "只" + random.choice(random_list)
-
-            if what:
-                unit = what
-
-            action = "加"
-            if msg.text.startswith("-"):
-                action = "减"
-
-            await update.message.reply_text(
-                f'{msg.from_user.full_name} 给 {reply_to_user.full_name} {action}了{num}{unit}!')
-        else:
-            logging.getLogger("Recv").warning("REGEX match failed")
+        await plus_or_minus(update, context)
     elif msg.text.startswith("!") or msg.text.startswith("！"):
-
-        message = msg.text[1:]
-        from_user_name = msg.from_user.full_name
-        target_user_name = msg.from_user.full_name
-        if check_contain_valid_str(message):
-            if update.message.reply_to_message:
-                target_user_name = update.message.reply_to_message.from_user.full_name
-                if message == "kiss":
-                    await update.message.reply_text(f'{msg.from_user.full_name} 亲了一口 {target_user_name}!')
-                    return
-                if message == "bite":
-                    await update.message.reply_text(f'{msg.from_user.full_name} 咬了一口 {target_user_name}!')
-                    return
-                if message == "stick":
-                    await update.message.reply_text(f'{msg.from_user.full_name} 贴贴了 {target_user_name}!')
-                    return
-            if message == "ban":
-                await update.message.reply_text(f'{target_user_name} 已封禁！')
-                return
-            elif message == "kick":
-                await update.message.reply_text(f'{target_user_name} 已踢出！')
-            else:
-                action = message
-                what = ''
-                match = re.fullmatch(r"(.+) (.+)", message)
-                if match:
-                    action = match.group(1)
-                    what = match.group(2)
-                    await update.message.reply_text(f'{from_user_name}{action}{target_user_name}{what}!')
-                else:
-                    await update.message.reply_text(f'{from_user_name}{action}{target_user_name}!')
+        await fake_command(update, context)
         # else:
         #     random_message = random.choice(random_message_list)
         #     if msguserid not in lastjoke:
@@ -186,7 +116,7 @@ def main():
                                                           callback=enable_message_count_warning)
     disable_message_count_warning_handler = CommandHandler('disable_message_count_warning',
                                                            callback=disable_message_count_warning)
-    scores_list_handler = CommandHandler('scores_list', callback=scores_list)                                                           
+    scores_list_handler = CommandHandler('scores_list', callback=scores_list)
     application.add_handler(msg_recv_handler)
     application.add_handler(enable_message_count_warning_handler)
     application.add_handler(disable_message_count_warning_handler)
