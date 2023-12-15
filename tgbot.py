@@ -110,8 +110,7 @@ def main():
     clear_score_thread.start()
     logging.basicConfig(
         format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s',
-        level=logging.DEBUG,
-        filename='tgbot.log'
+        level=logging.DEBUG
     )
 
     application = ApplicationBuilder().token(bot_token).read_timeout(5000).rate_limiter(
