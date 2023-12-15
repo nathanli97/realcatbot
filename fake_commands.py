@@ -51,6 +51,6 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if match:
                 action = match.group(1)
                 what = match.group(2)
-                await update.message.reply_text(f'{from_user_name}{action}{target_user_name}{what}!')
+                await update.message.reply_text(f'{from_user_name} {action} {target_user_name} {what}!')
             else:
-                await update.message.reply_text(f'{from_user_name}{action}{target_user_name}!')
+                await update.message.reply_text(f'{from_user_name} {action} {target_user_name}!')
