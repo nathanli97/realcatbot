@@ -5,6 +5,8 @@ import re
 from telegram import Update, Message
 from telegram.ext import ContextTypes
 
+from utils import get_message_username
+
 random_list = ["兔兔", "雁雁", "狗狗", "荧", "猫猫", "小企鹅", ]
 
 
@@ -12,18 +14,6 @@ random_list = ["兔兔", "雁雁", "狗狗", "荧", "猫猫", "小企鹅", ]
 #                        "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!", "想要唱希望之花",
 #                        "想要手冲", "想去M-Team发自己的自制色情片","想要退群","想要被兔纸骂zako!","想要被兔纸暴打!",
 #                        "想要爬上兔纸的床!","想要去东京援交","想自觉地撅起屁股","想露出来给群友透","想要被后入"]
-def get_message_username(msg: Message) -> str:
-    user_name = msg.from_user.full_name
-    if msg.sender_chat and msg.sender_chat.title:
-        user_name = msg.sender_chat.title
-
-    if msg.from_user.username and msg.from_user.username == 'GroupAnonymousBot':
-        user_name = msg.chat.title
-
-        if msg.author_signature:
-            user_name += f' ({msg.author_signature})'
-    return user_name
-
 
 async def plus_or_minus(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message

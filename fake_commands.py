@@ -1,7 +1,9 @@
+import logging
 import re
 
 from telegram import Update
 from telegram.ext import ContextTypes
+from utils import get_message_username
 
 
 def check_contain_chinese(check_str):
@@ -25,21 +27,25 @@ def check_contain_valid_str(check_str):
 async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
     message = msg.text[1:]
-    from_user_name = msg.from_user.full_name
-    target_user_name = msg.from_user.full_name
+
+    if not msg.reply_to_message:
+        logging.getLogger("Recv").warning("No reply to")
+        return
+
+    from_user_name = get_message_username(msg)
+    target_user_name = get_message_username(msg.reply_to_message)
+
     if check_contain_valid_str(message):
-        if update.message.reply_to_message:
-            target_user_name = update.message.reply_to_message.from_user.full_name
-            if message == "kiss":
-                await update.message.reply_text(f'{msg.from_user.full_name} 亲了一口 {target_user_name}!')
-                return
-            if message == "bite":
-                await update.message.reply_text(f'{msg.from_user.full_name} 咬了一口 {target_user_name}!')
-                return
-            if message == "stick":
-                await update.message.reply_text(f'{msg.from_user.full_name} 贴贴了 {target_user_name}!')
-                return
-        if message == "ban":
+        if message == "kiss":
+            await update.message.reply_text(f'{from_user_name} 亲了一口 {target_user_name}!')
+            return
+        elif message == "bite":
+            await update.message.reply_text(f'{from_user_name} 咬了一口 {target_user_name}!')
+            return
+        elif message == "stick":
+            await update.message.reply_text(f'{from_user_name} 贴贴了 {target_user_name}!')
+            return
+        elif message == "ban":
             await update.message.reply_text(f'{target_user_name} 已封禁！')
             return
         elif message == "kick":
