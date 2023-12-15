@@ -48,6 +48,9 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif message == "ban":
             await update.message.reply_text(f'{target_user_name} 已封禁！')
             return
+        elif message == "unban":
+            await update.message.reply_text(f'{target_user_name} 已解禁！')
+            return
         elif message == "kick":
             await update.message.reply_text(f'{target_user_name} 已踢出！')
         else:
