@@ -85,6 +85,9 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if scores[msguserid] > MaxScores and msguserid in message_count_warning_users:
         await update.message.reply_text(f'{msg.from_user.full_name} 这个小时内水太多啦！去做点其他事情吧。')
         return
+    if not msg.text:
+        # 这条消息不包含任何文本信息
+        return
     if msg.text.startswith("+") or msg.text.startswith("-"):
         await plus_or_minus(update, context)
     elif msg.text.startswith("!") or msg.text.startswith("！"):
