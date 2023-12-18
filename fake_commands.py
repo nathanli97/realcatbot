@@ -39,8 +39,11 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if message == "kiss":
             await update.message.reply_text(f'{from_user_name} 亲了一口 {target_user_name}!')
             return
-        if message == "mua":
+        elif message == "mua":
             await update.message.reply_text(f'{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲!')
+            return
+        elif message == "rua":
+            await update.message.reply_text(f'{from_user_name} 揉揉 {target_user_name} 的头!')
             return
         elif message == "bite":
             await update.message.reply_text(f'{from_user_name} 咬了一口 {target_user_name}!')
