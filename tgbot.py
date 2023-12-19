@@ -15,11 +15,22 @@ from collections import defaultdict
 
 from fake_commands import fake_command
 from plusminus import plus_or_minus
-from utils import get_message_username
+from utils import get_message_username, msgcount
 
-bot_token = os.environ['BOT_TOKEN']
-bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
-bot_webhook = os.environ['WEBHOOK']
+try:
+    bot_token = os.environ['BOT_TOKEN']
+    bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
+    bot_webhook = os.environ['WEBHOOK']
+except KeyError:
+    print("The following environment variables are required: BOT_TOKEN, WEBHOOK_PORT, WEBHOOK")
+    print("If using debug mode(No WEBHOOK Configured), ")
+    print("please feel free to set WEBHOOK_PORT and WEBHOOK environment variables to any value, the program will not to")
+    print("use the WEBHOOK_PORT and WEBHOOK environment variables.")
+    exit(-1)
+try:
+    bot_debug = os.environ['BOT_DEBUG'].upper() == "TRUE"
+except KeyError:
+    bot_debug = False
 
 message_count_warning_users = []  # 下个版本再实现持久化保存
 scores = defaultdict(int)
@@ -48,7 +59,7 @@ async def disable_message_count_warning(update: Update, context: ContextTypes.DE
 
 
 async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    strkey = ["本日内水王排行榜(每天8点重置一次)"]
+    header = ["本日内水王排行榜(每天8点重置一次)"]
     top_players = sorted(scores.items(), key=lambda e: e[1], reverse=True)[:14]
     for idx, (key, value) in enumerate(top_players, start=1):
         if value > 20:
@@ -87,10 +98,17 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    logging.basicConfig(
-        format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s',
-        level=logging.DEBUG
-    )
+    if not bot_debug:
+        logging.basicConfig(
+            format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s',
+            level=logging.INFO
+        )
+    else:
+        logging.basicConfig(
+            format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s',
+            level=logging.DEBUG,
+            filename='tgbot.log'
+        )
 
     application = ApplicationBuilder().token(bot_token).read_timeout(5000).rate_limiter(
         AIORateLimiter()).build()
@@ -108,12 +126,16 @@ def main():
 
     bot_secret_id = random_id_generator(32)
     logging.getLogger('Bot').warning(f'Bot running with random ID "{bot_secret_id}"')
-    application.run_webhook(
-        listen='127.0.0.1',
-        port=bot_webhook_port,
-        secret_token=bot_secret_id,
-        webhook_url=bot_webhook
-    )
+
+    if not bot_debug:
+        application.run_webhook(
+            listen='127.0.0.1',
+            port=bot_webhook_port,
+            secret_token=bot_secret_id,
+            webhook_url=bot_webhook
+        )
+    else:
+        application.run_polling()
 
 
 if __name__ == '__main__':

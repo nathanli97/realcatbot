@@ -6,16 +6,17 @@ from telegram.ext import ContextTypes
 from utils import get_message_username
 
 actions = {
-    "kiss": f'{from_user_name} 亲了一口 {target_user_name}!',
-    "mua": f'{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲!',
-    "rua": f'{from_user_name} 揉揉 {target_user_name} 的头!',
-    "bia": f'{from_user_name} 敲打 {target_user_name} 的脸蛋!',
-    "bite": f'{from_user_name} 咬了一口 {target_user_name}!',
-    "stick": f'{from_user_name} 贴贴了 {target_user_name}!',
-    "ban": f'{target_user_name} 已被管理员永久封禁！',
-    "unban": f'{target_user_name} 已解封！',
-    "kick": f'{target_user_name} 已被管理员永久踢出！',
+    "kiss": '{from_user_name} 亲了一口 {target_user_name}!',
+    "mua": '{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲!',
+    "rua": '{from_user_name} 揉揉 {target_user_name} 的头!',
+    "bia": '{from_user_name} 敲打 {target_user_name} 的脸蛋!',
+    "bite": '{from_user_name} 咬了一口 {target_user_name}!',
+    "stick": '{from_user_name} 贴贴了 {target_user_name}!',
+    "ban": '{target_user_name} 已被管理员永久封禁！',
+    "unban": '{target_user_name} 已解封！',
+    "kick": '{target_user_name} 已被管理员永久踢出！'
 }
+
 
 def check_contain_chinese(check_str):
     for ch in check_str:
@@ -40,7 +41,6 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = msg.text[1:]
 
     if not msg.reply_to_message:
-        logging.getLogger("Recv").warning("No reply to")
         return
 
     from_user_name = get_message_username(msg)
@@ -48,7 +48,7 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if check_contain_valid_str(message):
         if message in actions:
-            await update.message.reply_text(actions[message])
+            await update.message.reply_text(actions[message].format(from_user_name: from_user_name, target_user_name: target_user_name))
         else:
             action = message
             what = ''
