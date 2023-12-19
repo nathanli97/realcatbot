@@ -4,42 +4,29 @@ import random
 import re
 import string
 import time
-import schedule
-import threading
+import cn2an
 
 from telegram import Update
 from telegram.constants import ChatType
 from telegram.ext import ApplicationBuilder, AIORateLimiter, ContextTypes, MessageHandler, filters, CommandHandler
 
+from collections import defaultdict
+
+
 from fake_commands import fake_command
 from plusminus import plus_or_minus
 from utils import get_message_username
-
 
 bot_token = os.environ['BOT_TOKEN']
 bot_webhook_port = int(os.environ['WEBHOOK_PORT'])
 bot_webhook = os.environ['WEBHOOK']
 
 message_count_warning_users = []  # 下个版本再实现持久化保存
-
-scores = {}
+scores = defaultdict(int)
 lastjoke = {}
-idtoname = {}
-MaxScores = 150
+MaxScores = 100
+scores_randomslist = ['喵~','捏~','哼!','**的','baka!']
 
-score_lock = threading.Lock()
-
-
-def cleanscores():
-    scores.clear()
-
-
-schedule.every(45).minutes.do(cleanscores)
-
-
-def clear_score():
-    schedule.run_pending()
-    time.sleep(60)
 
 
 def random_id_generator(size=64, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
@@ -61,31 +48,26 @@ async def disable_message_count_warning(update: Update, context: ContextTypes.DE
 
 
 async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    strkey = "本小时内水王排行榜"
-    cnt = 0
-    after = dict(sorted(scores.items(), key=lambda e: e[1], reverse=True))
-    for key, value in after.items():
-        cnt += 1
-        if cnt > 11:
-            strkey = strkey + "\n还有几个水逼我就不列举了，哼!"
-            break
-        strkey = strkey + "\n第{}名 {} 水了 {} 条信息".format(str(cnt), idtoname[key], value)
-    await update.message.reply_text(strkey)
+    strkey = ["本日内水王排行榜(每天8点重置一次)"]
+    top_players = sorted(scores.items(), key=lambda e: e[1], reverse=True)[:14]
+    for idx, (key, value) in enumerate(top_players, start=1):
+        if value > 20:
+            position = cn2an.an2cn(idx, "up")
+            header.append(f'第 {position} 名 {key} 水了 {value} 条信息')
+    if len(top_players) < len(scores):
+        header.append(f'还有几个水逼我就不列举了，{random.choice(scores_randomslist)}')
+    await update.message.reply_text('\n'.join(header))
 
 
 async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
-    msguserid = str(msg.from_user.id)
+    msg_user = get_message_username(msg)
     if msg.chat.type is not ChatType.GROUP and \
             msg.chat.type is not ChatType.SUPERGROUP:
         return
-    if msguserid not in scores:
-        scores[msguserid] = 0
-        idtoname[msguserid] = msg.from_user.full_name
-    else:
-        scores[msguserid] = scores[msguserid] + 1
-    if scores[msguserid] > MaxScores and msguserid in message_count_warning_users:
-        await update.message.reply_text(f'{msg.from_user.full_name} 这个小时内水太多啦！去做点其他事情吧。')
+    msstatus,msmessage = msgcount(scores,msg_user,message_count_warning_users)
+    if msstatus:
+        await update.message.reply_text(msmessage)
         return
     if not msg.text:
         # 这条消息不包含任何文本信息
@@ -96,18 +78,15 @@ async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await fake_command(update, context)
         # else:
         #     random_message = random.choice(random_message_list)
-        #     if msguserid not in lastjoke:
-        #         lastjoke[msguserid] = random_message
+        #     if msg_user not in lastjoke:
+        #         lastjoke[msg_user] = random_message
         #     else:
-        #         while lastjoke[msguserid] == random_message:
+        #         while lastjoke[msg_user] == random_message:
         #             random_message = random.choice(random_message_list)
-        #     await update.message.reply_text(f'{msg.from_user.full_name}{random_message}')
+        #     await update.message.reply_text(f'{msg_user}{random_message}')
 
 
 def main():
-    clear_score_thread = threading.Thread(target=clear_score)
-    clear_score_thread.daemon = True  # 设置为守护线程，以确保程序退出时线程也会退出
-    clear_score_thread.start()
     logging.basicConfig(
         format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s',
         level=logging.DEBUG

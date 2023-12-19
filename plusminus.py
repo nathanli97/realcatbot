@@ -8,7 +8,7 @@ from telegram.ext import ContextTypes
 from utils import get_message_username
 
 random_list = ["兔兔", "雁雁", "狗狗", "荧", "猫猫", "小企鹅", ]
-
+random_slist = ['只','条','件','个','枚','种','把','吨']
 
 # random_message_list = ["想要挥刀自宫!", "想要申请全站自ban!", "开付费emby服!",
 #                        "想要传禁转资源并改官组后缀!", "想要去盗取他站界面!", "想要去开群友的盒!", "想要唱希望之花",
@@ -29,7 +29,7 @@ async def plus_or_minus(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if match:
         num = int(match.group(1))
         what = match.group(2)
-        unit = "只" + random.choice(random_list)
+        unit = random.choice(random_slist) + random.choice(random_list)
 
         if what:
             unit = what

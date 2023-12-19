@@ -5,6 +5,17 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from utils import get_message_username
 
+actions = {
+    "kiss": f'{from_user_name} 亲了一口 {target_user_name}!',
+    "mua": f'{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲!',
+    "rua": f'{from_user_name} 揉揉 {target_user_name} 的头!',
+    "bia": f'{from_user_name} 敲打 {target_user_name} 的脸蛋!',
+    "bite": f'{from_user_name} 咬了一口 {target_user_name}!',
+    "stick": f'{from_user_name} 贴贴了 {target_user_name}!',
+    "ban": f'{target_user_name} 已被管理员永久封禁！',
+    "unban": f'{target_user_name} 已解封！',
+    "kick": f'{target_user_name} 已被管理员永久踢出！',
+}
 
 def check_contain_chinese(check_str):
     for ch in check_str:
@@ -36,29 +47,8 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     target_user_name = get_message_username(msg.reply_to_message)
 
     if check_contain_valid_str(message):
-        if message == "kiss":
-            await update.message.reply_text(f'{from_user_name} 亲了一口 {target_user_name}!')
-            return
-        elif message == "mua":
-            await update.message.reply_text(f'{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲!')
-            return
-        elif message == "rua":
-            await update.message.reply_text(f'{from_user_name} 揉揉 {target_user_name} 的头!')
-            return
-        elif message == "bite":
-            await update.message.reply_text(f'{from_user_name} 咬了一口 {target_user_name}!')
-            return
-        elif message == "stick":
-            await update.message.reply_text(f'{from_user_name} 贴贴了 {target_user_name}!')
-            return
-        elif message == "ban":
-            await update.message.reply_text(f'{target_user_name} 已封禁！')
-            return
-        elif message == "unban":
-            await update.message.reply_text(f'{target_user_name} 已解禁！')
-            return
-        elif message == "kick":
-            await update.message.reply_text(f'{target_user_name} 已踢出！')
+        if message in actions:
+            await update.message.reply_text(actions[message])
         else:
             action = message
             what = ''
