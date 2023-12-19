@@ -64,7 +64,7 @@ async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 position = cn2an.an2cn(idx, "up")
                 header.append(f'第 {position} 名 {key} 水了 {value} 条信息')
                 count += 1
-        if len(top_players) < len(scores[str(update.message.chat.id)]):
+        if len(top_players) > count and count > 0:
             header.append(f'还有几个水逼我就不列举了，{random.choice(scores_randomslist)}')
         if count == 0:
             header = ["今日还没有水王上榜~"]
