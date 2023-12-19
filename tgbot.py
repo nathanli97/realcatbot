@@ -12,11 +12,10 @@ from telegram.ext import ApplicationBuilder, AIORateLimiter, ContextTypes, Messa
 
 from collections import defaultdict
 
-
 from fake_commands import fake_command
-from message_count import message_count_warning_users, scores, scores_randomslist
+from message_count import message_count_warning_users, scores, scores_randomslist, msgcount
 from plusminus import plus_or_minus
-from utils import get_message_username, msgcount
+from utils import get_message_username
 
 try:
     bot_token = os.environ['BOT_TOKEN']
@@ -25,14 +24,14 @@ try:
 except KeyError:
     print("The following environment variables are required: BOT_TOKEN, WEBHOOK_PORT, WEBHOOK")
     print("If using debug mode(No WEBHOOK Configured), ")
-    print("please feel free to set WEBHOOK_PORT and WEBHOOK environment variables to any value, the program will not to")
+    print(
+        "please feel free to set WEBHOOK_PORT and WEBHOOK environment variables to any value, the program will not to")
     print("use the WEBHOOK_PORT and WEBHOOK environment variables.")
     exit(-1)
 try:
     bot_debug = os.environ['BOT_DEBUG'].upper() == "TRUE"
 except KeyError:
     bot_debug = False
-
 
 
 def random_id_generator(size=64, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
@@ -54,24 +53,32 @@ async def disable_message_count_warning(update: Update, context: ContextTypes.DE
 
 
 async def scores_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    header = ["本日内水王排行榜(每天8点重置一次)"]
-    top_players = sorted(scores.items(), key=lambda e: e[1], reverse=True)[:14]
-    for idx, (key, value) in enumerate(top_players, start=1):
-        if value > 20:
-            position = cn2an.an2cn(idx, "up")
-            header.append(f'第 {position} 名 {key} 水了 {value} 条信息')
-    if len(top_players) < len(scores):
-        header.append(f'还有几个水逼我就不列举了，{random.choice(scores_randomslist)}')
+    if str(update.message.chat.id) not in scores:
+        header = ["今日还没有水王上榜~"]
+    else:
+        header = ["本群今日水王排行榜(每天8点重置一次)"]
+        top_players = sorted(scores[str(update.message.chat.id)].items(), key=lambda e: e[1], reverse=True)[:14]
+        count = 0
+        for idx, (key, value) in enumerate(top_players, start=1):
+            if value > 20:
+                position = cn2an.an2cn(idx, "up")
+                header.append(f'第 {position} 名 {key} 水了 {value} 条信息')
+                count += 1
+        if len(top_players) < len(scores[str(update.message.chat.id)]):
+            header.append(f'还有几个水逼我就不列举了，{random.choice(scores_randomslist)}')
+        if count == 0:
+            header = ["今日还没有水王上榜~"]
     await update.message.reply_text('\n'.join(header))
 
 
 async def recv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
     msg_user = get_message_username(msg)
+
     if msg.chat.type is not ChatType.GROUP and \
             msg.chat.type is not ChatType.SUPERGROUP:
         return
-    msstatus,msmessage = msgcount(scores,msg_user,message_count_warning_users)
+    msstatus, msmessage = msgcount(update.message.chat.id, msg_user)
     if msstatus:
         await update.message.reply_text(msmessage)
         return
