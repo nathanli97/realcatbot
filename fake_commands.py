@@ -41,6 +41,7 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = msg.text[1:]
 
     if not msg.reply_to_message:
+        logging.getLogger("Recv").warning("No reply to")
         return
 
     from_user_name = get_message_username(msg)
@@ -48,7 +49,7 @@ async def fake_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if check_contain_valid_str(message):
         if message in actions:
-            await update.message.reply_text(actions[message].format(from_user_name: from_user_name, target_user_name: target_user_name))
+            await update.message.reply_text(actions[message].format(**{'from_user_name': from_user_name, 'target_user_name': target_user_name}))
         else:
             action = message
             what = ''

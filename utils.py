@@ -1,6 +1,6 @@
 from telegram import Message
 
-from tgbot import MaxScores
+from message_count import MaxScores
 
 
 def get_message_username(msg: Message) -> str:

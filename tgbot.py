@@ -14,6 +14,7 @@ from collections import defaultdict
 
 
 from fake_commands import fake_command
+from message_count import message_count_warning_users, scores, scores_randomslist
 from plusminus import plus_or_minus
 from utils import get_message_username, msgcount
 
@@ -31,12 +32,6 @@ try:
     bot_debug = os.environ['BOT_DEBUG'].upper() == "TRUE"
 except KeyError:
     bot_debug = False
-
-message_count_warning_users = []  # 下个版本再实现持久化保存
-scores = defaultdict(int)
-lastjoke = {}
-MaxScores = 100
-scores_randomslist = ['喵~','捏~','哼!','**的','baka!']
 
 
 
