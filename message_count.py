@@ -16,8 +16,8 @@ def msgcount(chatid: int, msg_user: str):
 
     if last_known_day != -1 and day != last_known_day:
         scores.clear()
-    else:
-        last_known_day = day
+        
+    last_known_day = day
 
     chatid_str = str(chatid)
     if chatid_str not in scores:
