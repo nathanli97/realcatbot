@@ -6,18 +6,18 @@ from telegram.ext import ContextTypes
 from utils import get_message_username
 
 actions = {
-    "kiss": '{from_user_name} 亲了一口 {target_user_name}!',
-    "mua": '{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲!',
-    "rua": '{from_user_name} 揉揉 {target_user_name} 的头!',
-    "bia": '{from_user_name} 敲打 {target_user_name} 的脸蛋!',
-    "bite": '{from_user_name} 咬了一口 {target_user_name}!',
-    "stick": '{from_user_name} 贴贴了 {target_user_name}!',
+    "kiss": '{from_user_name} 亲了一口 {target_user_name},并祝愿2024新年快乐！！！！！！!',
+    "mua": '{from_user_name} 冲过去抱住 {target_user_name}，一顿狂亲,并祝愿2024新年快乐！！！！！！!',
+    "rua": '{from_user_name} 揉揉 {target_user_name} 的头,并祝愿2024新年快乐！！！！！！!',
+    "bia": '{from_user_name} 敲打 {target_user_name} 的脸蛋,并祝愿2024新年快乐！！！！！！!',
+    "bite": '{from_user_name} 咬了一口 {target_user_name},并祝愿2024新年快乐！！！！！！!',
+    "stick": '{from_user_name} 贴贴了 {target_user_name},并祝愿2024新年快乐！！！！！！!',
     "ban": '{target_user_name} 已被管理员永久封禁！',
     "unban": '{target_user_name} 已解封！',
-    "kick": '{target_user_name} 已被管理员永久踢出！',
-    "csn": '{from_user_name} 抱着 {target_user_name} 一顿c！',
-    "apple": '{from_user_name} 送给 {target_user_name} 一个苹果！',
-    '2024': '{from_user_name} 抱住 {target_user_name} 并祝愿2024新年快乐！！！！！'
+    "kick": '{target_user_name} 已被管理员永久踢出,并祝愿2024新年快乐！！！！！！！',
+    "csn": '{from_user_name} 抱着 {target_user_name} 一顿c,并祝愿2024新年快乐！！！！！！！',
+    "apple": '{from_user_name} 送给 {target_user_name} 一个苹果,并祝愿2024新年快乐！！！！！！',
+    '2024': '{from_user_name} 推倒了 {target_user_name} ,并祝愿2024新年快乐！！！！！！'
 }
 
 
